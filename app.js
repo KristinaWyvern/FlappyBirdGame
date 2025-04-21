@@ -1,7 +1,10 @@
 let config = {
   renderer: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  scale: {
+    width: innerWidth - 20,
+    height: innerHeight - 20,
+  },
+  backgroundColor: "#0099cc",
   physics: {
     default: 'arcade',
     arcade: {
@@ -27,26 +30,34 @@ let messageToPlayer;
 function preload() {
   this.load.image('background', './assets/background.png');
   this.load.image('road', './assets/road.png');
-  this.load.image('column', './assets/column.png');
+  this.load.image('columnUp', './assets/pipe-up.png');
+  this.load.image('columnDown', './assets/pipe-down.png');
   this.load.spritesheet('bird', './assets/bird.png', { frameWidth: 64, frameHeight: 96 });
 }
 
 function create() {
-  const background = this.add.image(0, 0, "background").setOrigin(0, 0);
+  const background = this.add.tileSprite(
+    game.config.width / 2,
+    game.config.height / 2,
+    game.config.width,
+    560,
+    "background"
+  );
   const roads = this.physics.add.staticGroup();
-  const topColumns = this.physics.add.staticGroup({
-  key: "column",
-  repeat: 1,
-  setXY: { x: 200, y: 0, stepX: 300 },
+  let topColumns=this.physics.add.staticGroup({
+      key: "columnUp",
+      repeat: 3,
+      setXY: { x: 200, y: 10, stepX: 300},
+      }); 
+  let bottomColumns =this.physics.add.staticGroup({
+  key: "columnDown",
+  repeat: 3,
+  setXY: { x: 350, y: 410,stepX: 300},
   });
 
-  const bottomColumns = this.physics.add.staticGroup({
-  key: "column",
-  repeat: 1,
-  setXY: { x: 350, y: 400, stepX: 300 },
-  });
 
-  const road = roads.create(400, 568, "road").setScale(2).refreshBody();
+  const road = roads.create(100, 650, "road").setScale(10, 1.6).refreshBody();
+ 
 
   bird = this.physics.add.sprite(0, 50, "bird").setScale(2);
   bird.setBounce(0.2);
@@ -92,9 +103,10 @@ if (hasLanded || hasBumped) {
 messageToPlayer.text = `Oh no! You crashed!`;
 }
 
-if (bird.x > 750) {
+if (bird.x > game.config.width-250) {
 bird.setVelocityY(40);
 messageToPlayer.text = `Congrats! You won!`;
 } 
 
 }
+
